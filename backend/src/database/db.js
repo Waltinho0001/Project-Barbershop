@@ -49,6 +49,7 @@ async function query(sql, params = []) {
     if (connection) connection.release();
   }
 }
+
 async function transaction(callback) {
   let connection;
   try {

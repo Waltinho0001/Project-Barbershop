@@ -11,8 +11,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
-    "mariadb": "^3.5.2"
+    "jsonwebtoken": "^9.0.3",
+    "mariadb": "^3.5.2",
+    "prompt-sync": "^4.2.0"
   }
 }

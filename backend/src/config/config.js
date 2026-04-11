@@ -7,5 +7,6 @@ module.exports = {
   DB_USER: process.env.DB_USER,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_NAME: process.env.DB_NAME,
-  SALT_HASH_PASSWORD:process.env.SALT_HASH_PASSWORD
+  SALT_HASH_PASSWORD:process.env.SALT_HASH_PASSWORD,
+  JWT_SECRET:process.env.JWT_SECRET
 };

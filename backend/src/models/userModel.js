@@ -1,91 +1,106 @@
 const db = require('../database/db');
 
-// Validação básica
-function validateUser(data) {
-    if (!data.name || !data.email || !data.password) {
-        throw new Error('Campos obrigatórios: name, email, password');
-    }
-}
+// Campos permitidos pra modificação
+const allowedFields = ['name', 'email', 'phone', 'role'];
 
 // CREATE
 async function create(user) {
-    try {
-        validateUser(user);
+    const { name, email, phone, password, role } = user;
 
-        const { name, email, phone, password, role } = user;
-
-        const [result] = await db.query(
-            `INSERT INTO users (name, email, phone, password, role)
-             VALUES (?, ?, ?, ?, ?)`,
-            [name, email, phone || null, password, role || 'client']
-        );
-
-        return { id: result.insertId, ...user };
-    } catch (error) {
-        throw error;
+    if (!name || !email || !password) {
+        throw new Error('Campos obrigatórios: name, email, password');
     }
+
+    const [result] = await db.query(
+        `INSERT INTO users (name, email, phone, password, role)
+         VALUES (?, ?, ?, ?, ?)`,
+        [name, email, phone || null, password, role || 'client']
+    );
+
+    return {
+        id: result.insertId,
+        name,
+        email,
+        phone,
+        role: role || 'client'
+        // password NUNCA é retornado
+    };
 }
 
-// READ
+// FIND BY ID
 async function findById(id) {
-    try {
-        const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
-        return rows[0] || null;
-    } catch (error) {
-        throw error;
-    }
+    const [rows] = await db.query(
+        `SELECT id, name, email, phone, role, created_at 
+         FROM users WHERE id = ?`,
+        [id]
+    );
+
+    return rows[0] || null;
 }
 
+// FIND ALL USERS
 async function findAll() {
-    try {
-        const [rows] = await db.query('SELECT * FROM users');
-        return rows;
-    } catch (error) {
-        throw error;
-    }
+    const [rows] = await db.query(
+        `SELECT id, name, email, phone, role, created_at FROM users`
+    );
+
+    return rows;
 }
 
+// FIND BY EMAIL (LOGIN USE CASE)
 async function findByEmail(email) {
-    try {
-        const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-        return rows[0] || null;
-    } catch (error) {
-        throw error;
-    }
+    const [rows] = await db.query(
+        `SELECT * FROM users WHERE email = ?`,
+        [email]
+    );
+
+    return rows[0] || null;
 }
 
 // UPDATE
-async function update(id, user) {
-    try {
-        const fields = [];
-        const values = [];
+async function updateUser(id, userData) {
+    const fields = [];
+    const values = [];
 
-        for (let key in user) {
-            fields.push(`${key} = ?`);
-            values.push(user[key]);
-        }
-
-        values.push(id);
-
-        await db.query(
-            `UPDATE users SET ${fields.join(', ')} WHERE id = ?`,
-            values
-        );
-
-        return { id, ...user };
-    } catch (error) {
-        throw error;
+    // Filtra apenas campos permitidos
+    for (const key of allowedFields) {
+      if (userData[key] !== undefined) {
+        fields.push(`${key} = ?`);
+        values.push(userData[key]);
+      }
     }
+
+    // Se não houver campos válidos
+    if (fields.length === 0) {
+      throw new Error('Nenhum campo válido para atualização');
+    }
+
+    values.push(id);
+
+    await db.query(
+      `UPDATE users SET ${fields.join(', ')} WHERE id = ?`, values
+    );
+
+    return await findById(id);
 }
 
 // DELETE
-async function remove(id) {
-    try {
-        await db.query('DELETE FROM users WHERE id = ?', [id]);
-        return { message: 'Usuário deletado com sucesso' };
-    } catch (error) {
-        throw error;
+async function deleteUser(id) {
+    const user = await findById(id);
+
+    if (!user) {
+        throw new Error('Usuário não encontrado');
     }
+
+    await db.query(
+        `DELETE FROM users WHERE id = ?`,
+        [id]
+    );
+
+    return {
+        message: 'Usuário deletado com sucesso',
+        user
+    };
 }
 
 module.exports = {
@@ -93,6 +108,6 @@ module.exports = {
     findById,
     findAll,
     findByEmail,
-    update,
-    delete: remove
+    updateUser,
+    deleteUser
 };

@@ -4,6 +4,10 @@ function validate(data) {
     if (!data.barber_id || !data.weekday || !data.start_time || !data.end_time) {
         throw new Error('Campos obrigatórios do horário de trabalho faltando');
     }
+
+    if (data.start_time >= data.end_time) {
+        throw new Error('Horário inicial deve ser menor que o final');
+    }
 }
 
 async function create(data) {
@@ -26,8 +30,19 @@ async function findByBarber(barber_id) {
     return rows;
 }
 
+async function findByBarberAndDay(barber_id, weekday) {
+    const [rows] = await db.query(
+        `SELECT * FROM working_hours WHERE barber_id = ? AND weekday = ?`,
+        [barber_id, weekday]
+    );
+    return rows[0] || null;
+}
+
 async function findById(id) {
-    const [rows] = await db.query('SELECT * FROM working_hours WHERE id = ?', [id]);
+    const [rows] = await db.query(
+        'SELECT * FROM working_hours WHERE id = ?',
+        [id]
+    );
     return rows[0] || null;
 }
 
@@ -47,7 +62,11 @@ async function update(id, data) {
 
     values.push(id);
 
-    await db.query(`UPDATE working_hours SET ${fields.join(', ')} WHERE id = ?`, values);
+    await db.query(
+        `UPDATE working_hours SET ${fields.join(', ')} WHERE id = ?`,
+        values
+    );
+
     return { id, ...data };
 }
 
@@ -62,5 +81,6 @@ module.exports = {
     findAll,
     update,
     delete: remove,
-    findByBarber
+    findByBarber,
+    findByBarberAndDay
 };

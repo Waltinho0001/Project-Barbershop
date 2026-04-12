@@ -10,6 +10,10 @@ const pool = mariadb.createPool({
   database: config.DB_NAME,
   connectionLimit: 10,
   
+  connectTimeout: 15000,
+  acquireTimeout: 15000,
+  timeout: 15000,
+  
   ssl: {
     rejectUnauthorized: false
   },

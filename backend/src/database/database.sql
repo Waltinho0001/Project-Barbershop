@@ -53,7 +53,7 @@ CREATE TABLE appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     client_id INT NOT NULL,
     barber_id INT NOT NULL,
-    service_id INT NOT NULL,
+    treatment_id INT NOT NULL,
     appointment_date DATE NOT NULL,
     appointment_time TIME NOT NULL,
     status ENUM('pending','confirmed','cancelled','completed') DEFAULT 'pending',
@@ -61,7 +61,7 @@ CREATE TABLE appointments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (barber_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
+    FOREIGN KEY (treatment_id) REFERENCES treatments(id) ON DELETE CASCADE
 );
 
 CREATE TABLE payments (
@@ -97,5 +97,5 @@ ON appointments (barber_id);
 CREATE INDEX idx_appointments_date 
 ON appointments (appointment_date);
 
-CREATE INDEX idx_services_active 
-ON services (is_active);
+CREATE INDEX idx_treatments_active 
+ON treatments (is_active);

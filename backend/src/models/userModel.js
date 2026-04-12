@@ -8,7 +8,7 @@ async function create(user) {
     const { name, email, phone, password, role } = user;
 
     if (!name || !email || !password) {
-        throw new Error('Campos obrigatórios: name, email, password');
+        throw new Error('Campos obrigatórios: name, email, e senha');
     }
 
     const [result] = await db.query(

@@ -80,7 +80,7 @@ module.exports = {
     findById,
     findAll,
     update,
-    delete: remove,
+    remove: id,
     findByBarber,
     findByBarberAndDay
 };

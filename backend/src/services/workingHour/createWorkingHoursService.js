@@ -1,7 +1,8 @@
-const workScheduleModel = require("../../models/workScheduleModel.js");
+const workingHoursModel = require("../../models/workingHoursModel.js");
 
 // SERVICES
 const workingHourExists = require("./workingHourExists.js");
+const workingHourTimeValidator = require("../../validators/workingHour/workingHourTimeValidator.js");
 
 async function createWorkingHourService(user, data){
   
@@ -18,7 +19,9 @@ async function createWorkingHourService(user, data){
   // Verifica se existe Serviço naquele mesmo dia
   await workingHourExists(barber_ID, data.weekday);
   
-
+  // Validação de Horário
+  workingHourTimeValidator(data.start_time, data.end_time);
+  
   return await workingHoursModel.create({
     barber_id,
     weekday: data.weekday,

@@ -1,6 +1,6 @@
 const listTreatmentsService = require("../../services/treatment/listTreatmentsService.js");
 
-async function listTreatmentsController(req, res) {
+async function listAllTreatmentsController(req, res) {
   try {
 
     const treatments = await listTreatmentsService();
@@ -20,4 +20,4 @@ async function listTreatmentsController(req, res) {
   }
 }
 
-module.exports = listTreatmentsController;
+module.exports = listAllTreatmentsController;

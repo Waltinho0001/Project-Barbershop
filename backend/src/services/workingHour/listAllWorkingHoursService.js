@@ -23,4 +23,4 @@ async function listAllWorkHourService(user, barber_id){
   };
 }
 
-module.exports = deleteWorkHourService;
+module.exports = listAllWorkHourService;
